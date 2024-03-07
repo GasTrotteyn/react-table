@@ -1,4 +1,9 @@
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import {
+	useReactTable,
+	getCoreRowModel,
+	flexRender,
+	getPaginationRowModel,
+} from '@tanstack/react-table';
 import data from '../MOCK_DATA.json';
 import dayjs from 'dayjs';
 
@@ -32,7 +37,12 @@ const SimpleTable = () => {
 		},
 	];
 
-	const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
+	const table = useReactTable({
+		data,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+	});
 	return (
 		<div>
 			<table>
@@ -72,13 +82,19 @@ const SimpleTable = () => {
 						<tr key={footerGroup.id}>
 							{footerGroup.headers.map((footer) => (
 								<th key={footer.id}>
-									{flexRender(footer.column.columnDef.footer, footer.getContext())}
+									{footer.isPlaceholder
+										? null
+										: flexRender(footer.column.columnDef.header, footer.getContext())}
 								</th>
 							))}
 						</tr>
 					))}
 				</tfoot>
 			</table>
+			<button onClick={() => table.setPageIndex(0)}>primera página</button>
+			<button onClick={() => table.previousPage()}>página anterior</button>
+			<button onClick={() => table.nextPage()}>página siguiente</button>
+			<button onClick={() => table.setPageIndex(table.getPageCount() - 1)}>última página</button>
 		</div>
 	);
 };
