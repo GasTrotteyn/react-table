@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import {
 	useReactTable,
 	getCoreRowModel,
 	flexRender,
 	getPaginationRowModel,
+	getSortedRowModel,
 } from '@tanstack/react-table';
 import data from '../MOCK_DATA.json';
 import dayjs from 'dayjs';
@@ -37,11 +39,16 @@ const SimpleTable = () => {
 		},
 	];
 
+	const [sorting, setSorting] = useState([]);
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		state: { sorting },
+		onSortingChange: setSorting,
 	});
 	return (
 		<div>
@@ -53,10 +60,15 @@ const SimpleTable = () => {
 					{table.getHeaderGroups().map((headerGroup) => (
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
-								<th key={header.id}>
+								<th key={header.id} onClick={header.column.getToggleSortingHandler()}>
 									{header.isPlaceholder
 										? null
 										: flexRender(header.column.columnDef.header, header.getContext())}
+									{header.column.getIsSorted()
+										? header.column.getIsSorted() === 'asc'
+											? '🔼'
+											: '🔽'
+										: null}
 								</th>
 							))}
 						</tr>
