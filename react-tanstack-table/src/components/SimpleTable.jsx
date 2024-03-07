@@ -1,5 +1,6 @@
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import data from '../MOCK_DATA.json';
+import dayjs from 'dayjs';
 
 const SimpleTable = () => {
 	// {
@@ -14,9 +15,21 @@ const SimpleTable = () => {
 		{ header: 'ID', accessorKey: 'id', footer: 'my id' },
 		{ header: 'Name', accessorKey: 'name', footer: 'my name' },
 		{ header: 'Lastname', accessorKey: 'last_name', footer: 'my Lastname' },
-		{ header: 'Email', accessorKey: 'email', footer: 'my email' },
-		{ header: 'Country', accessorKey: 'country', footer: 'my country' },
-		{ header: 'Fecha de nacimiento', accessorKey: 'dateOfBirth', footer: 'my day of birth' },
+		{ header: 'Nombre Completo', accessorFn: (row) => `${row.name} ${row.last_name}` },
+		{
+			header: 'mail y país',
+			columns: [
+				{ header: 'Email', accessorKey: 'email', footer: 'my email' },
+				{ header: 'Country', accessorKey: 'country', footer: 'my country' },
+			],
+		},
+
+		{
+			header: 'Fecha de nacimiento',
+			accessorKey: 'dateOfBirth',
+			footer: 'my day of birth',
+			cell: (info) => dayjs(info.getValue()).format('DD/MM/YYYY'),
+		},
 	];
 
 	const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
@@ -31,7 +44,9 @@ const SimpleTable = () => {
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
 								<th key={header.id}>
-									{flexRender(header.column.columnDef.header, header.getContext())}
+									{header.isPlaceholder
+										? null
+										: flexRender(header.column.columnDef.header, header.getContext())}
 								</th>
 							))}
 						</tr>
