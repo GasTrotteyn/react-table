@@ -5,6 +5,7 @@ import {
 	flexRender,
 	getPaginationRowModel,
 	getSortedRowModel,
+	getFilteredRowModel,
 } from '@tanstack/react-table';
 import data from '../MOCK_DATA.json';
 import dayjs from 'dayjs';
@@ -40,6 +41,7 @@ const SimpleTable = () => {
 	];
 
 	const [sorting, setSorting] = useState([]);
+	const [filtering, setFiltering] = useState('');
 
 	const table = useReactTable({
 		data,
@@ -47,11 +49,14 @@ const SimpleTable = () => {
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
-		state: { sorting },
+		getFilteredRowModel: getFilteredRowModel(),
+		state: { sorting, globalFilter: filtering },
 		onSortingChange: setSorting,
+		onGlobalFilterChange: setFiltering,
 	});
 	return (
 		<div>
+			<input type='text' value={filtering} onChange={(e) => setFiltering(e.target.value)} />
 			<table>
 				<thead>
 					{/* <tr>
@@ -61,14 +66,16 @@ const SimpleTable = () => {
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
 								<th key={header.id} onClick={header.column.getToggleSortingHandler()}>
-									{header.isPlaceholder
-										? null
-										: flexRender(header.column.columnDef.header, header.getContext())}
-									{header.column.getIsSorted()
-										? header.column.getIsSorted() === 'asc'
-											? '🔼'
-											: '🔽'
-										: null}
+									<div>
+										{header.isPlaceholder
+											? null
+											: flexRender(header.column.columnDef.header, header.getContext())}
+										{header.column.getIsSorted()
+											? header.column.getIsSorted() === 'asc'
+												? '🔼'
+												: '🔽'
+											: null}
+									</div>
 								</th>
 							))}
 						</tr>
